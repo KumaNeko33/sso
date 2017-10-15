@@ -102,7 +102,7 @@ public class UpmsAuthenticationFilter extends AuthenticationFilter {
 
         // 判断局部会话是否登录
         String cacheClientSession = RedisUtil.get(ZHENG_UPMS_CLIENT_SESSION_ID + "_" + session.getId());
-        if (StringUtils.isNotBlank(cacheClientSession)) {
+        if (StringUtils.isNotBlank(cacheClientSession)) {//已登录过
             // 更新code有效期
             RedisUtil.set(ZHENG_UPMS_CLIENT_SESSION_ID + "_" + sessionId, cacheClientSession, timeOut);
             Jedis jedis = RedisUtil.getJedis();
@@ -127,19 +127,19 @@ public class UpmsAuthenticationFilter extends AuthenticationFilter {
         if (StringUtils.isNotBlank(code)) {
             // HttpPost去校验code
             try {
-                StringBuffer sso_server_url = new StringBuffer(PropertiesFileUtil.getInstance("zheng-upms-client").get("zheng.upms.sso.server.url"));
+                StringBuffer sso_server_url = new StringBuffer(PropertiesFileUtil.getInstance("zheng-upms-client").get("zheng.upms.sso.server.url"));//url到时用nginx代理下
                 HttpClient httpclient = new DefaultHttpClient();
-                HttpPost httpPost = new HttpPost(sso_server_url.toString() + "/sso/code");
+                HttpPost httpPost = new HttpPost(sso_server_url.toString() + "/sso/code");//sso认证中心检验code
 
                 List<NameValuePair> nameValuePairs = new ArrayList<>();
                 nameValuePairs.add(new BasicNameValuePair("code", code));
                 httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
-                HttpResponse httpResponse = httpclient.execute(httpPost);
-                if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                HttpResponse httpResponse = httpclient.execute(httpPost);//执行HttpPost请求
+                if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {//请求连接成功：200
                     HttpEntity httpEntity = httpResponse.getEntity();
                     JSONObject result = JSONObject.parseObject(EntityUtils.toString(httpEntity));
-                    if (1 == result.getIntValue("code") && result.getString("data").equals(code)) {
+                    if (1 == result.getIntValue("code") && result.getString("data").equals(code)) {//1 == result.getIntValue("code")指code对应的值不为null
                         // code校验正确，创建局部会话
                         RedisUtil.set(ZHENG_UPMS_CLIENT_SESSION_ID + "_" + sessionId, code, timeOut);
                         // 保存code对应的局部会话sessionId，方便退出操作

@@ -111,9 +111,9 @@ public class SSOController extends BaseController {
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseBody
     public Object login(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap) {
-        String username = request.getParameter("username");
+        String username = request.getParameter("username");//获取/sso/login.jsp页面用户输入的登录信息
         String password = request.getParameter("password");
-        String rememberMe = request.getParameter("rememberMe");
+        String rememberMe = request.getParameter("rememberMe");//是否 记住我状态
         if (StringUtils.isBlank(username)) {
             return new UpmsResult(UpmsResultConstant.EMPTY_USERNAME, "帐号不能为空！");
         }
@@ -126,7 +126,7 @@ public class SSOController extends BaseController {
         // 判断是否已登录，如果已登录，则回跳，防止重复登录
         String hasCode = RedisUtil.get(ZHENG_UPMS_SERVER_SESSION_ID + "_" + sessionId);
         // code校验值
-        if (StringUtils.isBlank(hasCode)) {
+        if (StringUtils.isBlank(hasCode)) {//hasCode为空表示未登录
             // 使用shiro认证
             UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(username, password);
             try {
@@ -135,23 +135,24 @@ public class SSOController extends BaseController {
                 } else {
                     usernamePasswordToken.setRememberMe(false);
                 }
-                subject.login(usernamePasswordToken);
+                subject.login(usernamePasswordToken);//shiro的标准登录验证
             } catch (UnknownAccountException e) {
                 return new UpmsResult(UpmsResultConstant.INVALID_USERNAME, "帐号不存在！");
             } catch (IncorrectCredentialsException e) {
                 return new UpmsResult(UpmsResultConstant.INVALID_PASSWORD, "密码错误！");
-            } catch (LockedAccountException e) {
+            } catch (LockedAccountException e) {//这自定义的 Realm认证过程中抛出的异常，在Client中的UpmsRealm的认证，        if (upmsUser.getLocked() == 1) throw new LockedAccountException();}
                 return new UpmsResult(UpmsResultConstant.INVALID_ACCOUNT, "帐号已锁定！");
             }
+            //没有被捕获异常，则说明验证通过，进行用户登录状态存储
             // 更新session状态为 在线 ，认证中心通过redis来存sessionId，而客户端通过cookie存
             upmsSessionDao.updateStatus(sessionId, UpmsSession.OnlineStatus.on_line);
             // 全局会话sessionId列表，供会话管理
             RedisUtil.lpush(ZHENG_UPMS_SERVER_SESSION_IDS, sessionId.toString());
             // 默认验证帐号密码正确，创建code，相当于ticket用来验证请求资源时是否登录的凭证
             String code = UUID.randomUUID().toString();
-            // 全局会话的code
+            // 全局会话的code：用来实现单点登录
             RedisUtil.set(ZHENG_UPMS_SERVER_SESSION_ID + "_" + sessionId, code, (int) subject.getSession().getTimeout() / 1000);
-            // 缓存code校验值，用于之后检验用，key的过期时间与会话过期时间相同：半个小时
+            // 缓存code校验值，用于之后检验用，用来实现单点登录，key的过期时间与会话过期时间相同：半个小时
             RedisUtil.set(ZHENG_UPMS_SERVER_CODE + "_" + code, code, (int) subject.getSession().getTimeout() / 1000);
         }
         // 回跳登录前地址
@@ -170,12 +171,12 @@ public class SSOController extends BaseController {
         String codeParam = request.getParameter("code");//客户端请求时需在 请求url上 加上认证成功时收到的code参数
         String code = RedisUtil.get(ZHENG_UPMS_SERVER_CODE + "_" + codeParam);//看看能否通过这个code从redis中获取到
         if (StringUtils.isBlank(codeParam) || !codeParam.equals(code)) {
-            new UpmsResult(UpmsResultConstant.FAILED, "无效code");//如果客户端请求url没有code参数，或没有从redis中获取到值,则说明认证已登录失败
+            return new UpmsResult(UpmsResultConstant.FAILED, "无效code");//如果客户端请求url没有code参数，或没有从redis中获取到值,则说明认证已登录失败
         }
         return new UpmsResult(UpmsResultConstant.SUCCESS, code);//否则说明认证已登录 成功,重新返回code，且如果需要可以在get时重置code校验值的过期时间哦
     }
 
-    @ApiOperation(value = "退出登录")
+    @ApiOperation(value = "退出登录")//没有移除redis中对应的会话？
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
     public String logout(HttpServletRequest request) {
         // shiro退出登录
