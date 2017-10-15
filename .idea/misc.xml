@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="FrameworkDetectionExcludesConfiguration">
+    <file type="web" url="file://$PROJECT_DIR$/zheng-api/zheng-api-server" />
+    <file type="web" url="file://$PROJECT_DIR$/zheng-cms/zheng-cms-admin" />
+    <file type="web" url="file://$PROJECT_DIR$/zheng-cms/zheng-cms-job" />
+    <file type="web" url="file://$PROJECT_DIR$/zheng-cms/zheng-cms-search" />
+    <file type="web" url="file://$PROJECT_DIR$/zheng-cms/zheng-cms-web" />
+    <file type="web" url="file://$PROJECT_DIR$/zheng-demo/zheng-demo-web" />
+    <file type="web" url="file://$PROJECT_DIR$/zheng-oss/zheng-oss-admin" />
+    <file type="web" url="file://$PROJECT_DIR$/zheng-oss/zheng-oss-web" />
+    <file type="web" url="file://$PROJECT_DIR$/zheng-pay/zheng-pay-admin" />
+    <file type="web" url="file://$PROJECT_DIR$/zheng-pay/zheng-pay-web" />
+    <file type="web" url="file://$PROJECT_DIR$/zheng-ucenter/zheng-ucenter-web" />
+    <file type="web" url="file://$PROJECT_DIR$/zheng-upms/zheng-upms-server" />
+    <file type="web" url="file://$PROJECT_DIR$/zheng-wechat/zheng-wechat-mp/zheng-wechat-mp-admin" />
+  </component>
+  <component name="MavenProjectsManager">
+    <option name="originalFiles">
+      <list>
+        <option value="$PROJECT_DIR$/pom.xml" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/classes" />
+  </component>
+</project>
