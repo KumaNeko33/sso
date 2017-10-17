@@ -48,10 +48,10 @@ public class UpmsServiceTest {
         upmsUser.setLocked((byte) 0);
         upmsUser.setPassword("xxx");
         upmsUser.setPhone("");
-        upmsUser.setRealname("zsz");
+        upmsUser.setRealname("帅帅");
         upmsUser.setSex((byte) 1);
         upmsUser.setSalt("");
-        upmsUser.setUsername("zsz");
+        upmsUser.setUsername("shuai");
         upmsUserService.insertSelective(upmsUser);
         System.out.println(upmsUser.getUserId());
     }
