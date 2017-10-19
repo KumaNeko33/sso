@@ -177,8 +177,8 @@ public class UpmsUserController extends BaseController {
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public Object create(UpmsUser upmsUser) {
         ComplexResult result = FluentValidator.checkAll()
-                .on(upmsUser.getUsername(), new LengthValidator(1, 20, "帐号"))
-                .on(upmsUser.getPassword(), new LengthValidator(5, 32, "密码"))
+                .on(upmsUser.getUsername(), new LengthValidator(1, 20, "帐号"))//帐号最小长度，最大长度20
+                .on(upmsUser.getPassword(), new LengthValidator(5, 32, "密码"))//密码最小长度5，最大长度32
                 .on(upmsUser.getRealname(), new NotNullValidator("姓名"))
                 .doValidate()
                 .result(ResultCollectors.toComplex());
@@ -186,9 +186,9 @@ public class UpmsUserController extends BaseController {
             return new UpmsResult(UpmsResultConstant.INVALID_LENGTH, result.getErrors());
         }
         long time = System.currentTimeMillis();
-        String salt = UUID.randomUUID().toString().replaceAll("-", "");
+        String salt = UUID.randomUUID().toString().replaceAll("-", "");//salt是UUID去掉“-”，登录时也是从数据库取出加盐
         upmsUser.setSalt(salt);
-        upmsUser.setPassword(MD5Util.MD5(upmsUser.getPassword() + upmsUser.getSalt()));
+        upmsUser.setPassword(MD5Util.MD5(upmsUser.getPassword() + upmsUser.getSalt()));//密码加盐
         upmsUser.setCtime(time);
         upmsUser = upmsUserService.createUser(upmsUser);
         if (null == upmsUser) {

@@ -27,7 +27,7 @@
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
-            classpath*:applicationContext*.xml
+            classpath*:applicationContext*.xml<!--因为zheng-cms-admin依赖了zheng-upms-client包，所以包下面的所有applicationContext*.xml配置文件也会生效-->
         </param-value>
     </context-param>
 

@@ -66,7 +66,7 @@ public class SSOController extends BaseController {
         String appid = request.getParameter("appid");
         String backurl = request.getParameter("backurl");
         if (StringUtils.isBlank(appid)) {
-            throw new RuntimeException("无效访问！");//没有appid，报错
+//            throw new RuntimeException("无效访问！");//没有appid，报错
         }
         // 判断请求的来源（可能是客户端）是否在sso认证系统注册
         UpmsSystemExample upmsSystemExample = new UpmsSystemExample();
@@ -113,7 +113,7 @@ public class SSOController extends BaseController {
     public Object login(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap) {
         String username = request.getParameter("username");//获取/sso/login.jsp页面用户输入的登录信息
         String password = request.getParameter("password");
-        String rememberMe = request.getParameter("rememberMe");//是否 记住我状态
+        String rememberMe = request.getParameter("rememberMe");//是否 记住我状态:false true
         if (StringUtils.isBlank(username)) {
             return new UpmsResult(UpmsResultConstant.EMPTY_USERNAME, "帐号不能为空！");
         }
@@ -122,9 +122,9 @@ public class SSOController extends BaseController {
         }
         Subject subject = SecurityUtils.getSubject();
         Session session = subject.getSession();
-        String sessionId = session.getId().toString();
+        String sessionId = session.getId().toString();//就算没登录过也会有sessionId
         // 判断是否已登录，如果已登录，则回跳，防止重复登录
-        String hasCode = RedisUtil.get(ZHENG_UPMS_SERVER_SESSION_ID + "_" + sessionId);
+        String hasCode = RedisUtil.get(ZHENG_UPMS_SERVER_SESSION_ID + "_" + sessionId);//过滤器验证一遍，这里再验证一遍，防止重复登录
         // code校验值
         if (StringUtils.isBlank(hasCode)) {//hasCode为空表示未登录
             // 使用shiro认证

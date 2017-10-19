@@ -22,8 +22,8 @@
         </property>
         <property name="filterChainDefinitions">
             <value>
-                /manage/** = upmsSessionForceLogout,authc
-                /manage/index = user
+                /manage/** = upmsSessionForceLogout,authc //这个即是 sso的权限管理系统的 资源拦截链接，也是zheng-cms-admin中的资源拦截链接
+                /manage/index = user //这个即是 sso的权限管理系统的 资源拦截链接，也是zheng-cms-admin中的资源拦截链接
                 /druid/** = user
                 /swagger-ui.html = user
                 /resources/** = anon

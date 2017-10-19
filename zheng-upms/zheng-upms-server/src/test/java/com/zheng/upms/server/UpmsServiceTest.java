@@ -27,7 +27,7 @@ public class UpmsServiceTest {
     @Test
     public void index() {
         int count = upmsSystemService.countByExample(new UpmsSystemExample());
-        System.out.println(count);
+        System.out.println(count);//打印结果：5，既有5个系统注册
     }
 
 }

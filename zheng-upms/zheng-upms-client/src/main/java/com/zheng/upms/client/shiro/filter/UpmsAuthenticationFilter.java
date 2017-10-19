@@ -63,7 +63,7 @@ public class UpmsAuthenticationFilter extends AuthenticationFilter {
             return validateClient(request, response);
         }
         if ("server".equals(upmsType)) {
-            return subject.isAuthenticated();
+            return subject.isAuthenticated();//判断发起请求的对象是否认证成功:false没有的话跳转到下面的onAccessDenied
         }
         return false;
     }
